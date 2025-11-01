@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shree Enterprise Billing</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Shree Enterprise</h1>
+    <p>Billing System</p>
+  </header>
+
+  <main>
+    <section class="billing-form">
+      <table id="billTable">
+        <thead>
+          <tr>
+            <th>Item Name</th>
+            <th>Quantity</th>
+            <th>Price (₹)</th>
+            <th>Total (₹)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="billBody">
+          <tr>
+            <td><input type="text" placeholder="Item"></td>
+            <td><input type="number" min="1" value="1"></td>
+            <td><input type="number" min="0" value="0"></td>
+            <td class="itemTotal">0</td>
+            <td><button class="deleteBtn">❌</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="controls">
+        <button id="addRow">➕ Add Item</button>
+        <button id="printBill">🖨️ Print / Save</button>
+      </div>
+
+      <div class="summary">
+        <h2>Grand Total: ₹ <span id="grandTotal">0</span></h2>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Shree Enterprise | Developed with ❤️</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
