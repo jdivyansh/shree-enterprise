@@ -1,94 +1,73 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+:root{
+  --blue-100:#e7f3fc;
+  --blue-500:#1f4e79;
+  --blue-700:#0b2447;
+  --muted:#6b7280;
+  --border:#dbe9f6;
+}
+*{box-sizing:border-box}
+body{font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif;background:#f3f6f9;padding:18px;color:#111}
+.page-wrap{max-width:900px;margin:0 auto}
+.invoice-box{background:#fff;border:1px solid var(--border);padding:18px;border-radius:6px;box-shadow:0 6px 18px rgba(12,38,73,0.06)}
+.inv-header{display:flex;gap:12px;align-items:flex-start;border-bottom:2px solid var(--blue-100);padding-bottom:12px;margin-bottom:12px}
+.logo-wrap{flex:0 0 110px}
+.logo-wrap img{width:100px;height:100px;object-fit:cover;border-radius:6px;border:1px solid #e6eef6;background:#fff;padding:4px}
+.company-wrap{flex:1;padding-left:6px}
+.company-wrap h1{margin:0;color:var(--blue-700);font-size:20px;letter-spacing:1px}
+.company-addr{color:var(--muted);margin-top:6px;font-size:13px}
+.inv-meta{flex:0 0 220px;text-align:right}
+.inv-meta h2{margin:0;color:var(--blue-500);font-size:18px}
+.inv-meta label{display:block;margin-top:6px}
+.inv-meta input{padding:6px;border:1px solid #d1d5db;border-radius:4px;width:140px}
+
+.bill-to{display:flex;justify-content:space-between;gap:12px;margin-top:12px}
+.bill-to .left,.bill-to .right{flex:1}
+.bill-to h3{margin:0;color:var(--blue-700);font-size:15px}
+.bill-to input{display:block;margin-top:6px;padding:8px;border:1px solid #e6eef6;border-radius:4px;width:100%}
+
+.items{width:100%;border-collapse:collapse;margin-top:12px}
+.items th,.items td{border:1px solid var(--border);padding:8px;font-size:13px;text-align:center}
+.items th{background:var(--blue-100);color:var(--blue-700);font-weight:700}
+.items input{width:100%;padding:6px;border:1px solid #e6eef6;border-radius:4px}
+
+.controls{margin-top:12px;display:flex;gap:8px}
+.controls button{padding:8px 12px;border-radius:6px;border:none;background:var(--blue-500);color:white;cursor:pointer;box-shadow:0 2px 6px rgba(31,78,121,0.12)}
+.controls button:hover{opacity:.95}
+
+.summary{margin-top:12px;float:right;width:320px}
+.summary table{width:100%;border-collapse:collapse}
+.summary td{padding:8px;border-bottom:1px dashed #eef6fb;font-size:14px}
+.summary .grand td{font-weight:800;background:var(--blue-500);color:white}
+
+.inwords{margin-top:10px;font-size:13px;color:#333}
+
+.inv-footer{clear:both;margin-top:28px;padding-top:12px;border-top:1px dashed #eef6fb;color:var(--muted);font-size:13px}
+.inv-footer .bank{font-weight:600;color:var(--blue-700)}
+
+/* responsive */
+@media (max-width:760px){
+  .inv-header{flex-direction:row;gap:8px}
+  .inv-meta{flex:0 0 140px;text-align:right}
+  .logo-wrap{flex:0 0 80px}
+  .logo-wrap img{width:80px;height:80px}
+  .summary{width:100%;float:none}
+  .bill-to{flex-direction:column}
 }
 
-body {
-  background-color: #f5f7fa;
-  color: #333;
-  padding: 20px;
-}
-
-header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-header h1 {
-  color: #0077cc;
-  font-size: 2rem;
-}
-
-header p {
-  font-size: 1rem;
-  color: #555;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 15px;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-th, td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
-}
-
-th {
-  background-color: #0077cc;
-  color: white;
-}
-
-input[type="text"], input[type="number"] {
-  width: 90%;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background-color: #0077cc;
-  color: white;
-  transition: 0.2s;
-}
-
-button:hover {
-  background-color: #005fa3;
-}
-
-.deleteBtn {
-  background-color: #ff4d4d;
-}
-
-.deleteBtn:hover {
-  background-color: #d93636;
-}
-
-.controls {
-  text-align: center;
-  margin-top: 10px;
-}
-
-.summary {
-  text-align: right;
-  font-size: 1.2rem;
-  margin-top: 10px;
-  color: #222;
-}
-
-footer {
-  text-align: center;
-  margin-top: 30px;
-  color: #777;
-  font-size: 0.9rem;
+/* print styles */
+@media print{
+  body{background:white;padding:0}
+  .page-wrap{margin:0}
+  .controls, .del, #addItem, #printBtn{display:none !important}
+  input{border:none;box-shadow:none;padding:0;margin:0}
+  .logo-wrap img{border:none}
+  .invoice-box{box-shadow:none;border:1px solid #cfe8fb;padding:12px}
+  .items th,.items td{font-size:12px;padding:6px}
+  .inv-meta input{border:none}
+  .bill-to input{border:none}
+  .items input{border:none}
+  .inv-footer{page-break-inside:avoid}
+  /* ensure page fits A4 */
+  @page { size: A4; margin: 12mm; }
 }
