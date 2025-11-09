@@ -1,1 +1,1 @@
-SHRI ENTERPRISE - Blue theme final. Open index.html, AppyFlow key embedded, enter GSTIN to auto-fill.
+SHRI ENTERPRISE - Final (WhatsApp + AppyFlow ready). Open index.html and use the buttons.

@@ -1,5 +1,4 @@
-
-// AppyFlow GST configuration (Key inserted)
+// AppyFlow GST configuration (key embedded)
 const GST_API = {
   endpoint: 'https://appyflow.in/api/verifyGST',
   apiKey: '66LKC7ZBaxNdRXzWirfiurMcxj43',
@@ -25,9 +24,21 @@ async function fetchGST(gstin) {
     const res = await fetch(url);
     if (!res.ok) { showStatus('GST lookup failed: ' + res.statusText, false); return null; }
     const data = await res.json();
-    const tradeName = data.tradeName || data.legalName || data.legalname || data.legalName || (data.result && data.result.legalName);
-    const address = data.address || data.address_line || (data.result && data.result.address) || '';
-    const state = data.state || (data.result && data.result.state) || '';
+    const info = data.taxpayerInfo || data.result || data.data || null;
+    if (!info) {
+      showStatus('Unexpected GST response format', false);
+      return null;
+    }
+    const tradeName = info.tradeNam || info.lgnm || info.legalName || info.legalname || info.tradeName || '';
+    let address = '';
+    try {
+      const pradr = info.pradr || info.princple || info.principalPlace || info.principalPlaceOfBusiness || {};
+      const addr = pradr.addr || pradr.address || {};
+      address = [addr.bno, addr.st, addr.loc, addr.dst, addr.pncd].filter(Boolean).join(', ');
+    } catch (e) {
+      address = info.address || info.address_line || '';
+    }
+    const state = (info.pradr && info.pradr.addr && info.pradr.addr.stcd) || info.state || '';
     showStatus('Fetched from GST portal', true);
     return { tradeName, address, state, raw: data };
   } catch (e) {
@@ -37,6 +48,7 @@ async function fetchGST(gstin) {
   }
 }
 
+// amount to words (Indian)
 function amountToWords(amount) {
   const oneToNineteen = ['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
   const tensNames = ['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
@@ -55,7 +67,8 @@ function amountToWords(amount) {
 document.addEventListener('DOMContentLoaded', () => {
   const itemsBody = document.getElementById('itemsBody');
   const addItemBtn = document.getElementById('addItem');
-  const printBtn = document.getElementById('printBtn');
+  const generatePdfBtn = document.getElementById('generatePdf');
+  const whatsappBtn = document.getElementById('whatsappBtn');
   const resetBtn = document.getElementById('resetBtn');
   const taxableEl = document.getElementById('taxable');
   const cgstEl = document.getElementById('cgst');
@@ -63,6 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const grandEl = document.getElementById('grandTotal');
   const inWordsEl = document.getElementById('inWords');
   const buyerGST = document.getElementById('buyerGST');
+  const buyerName = document.getElementById('buyerName');
+  const buyerAddress = document.getElementById('buyerAddress');
+  const buyerState = document.getElementById('buyerState');
+  const buyerWhats = document.getElementById('buyerWhats');
+  const invoiceBox = document.getElementById('invoiceBox');
+
+  // set today's date
+  document.getElementById('invoiceDate').valueAsDate = new Date();
 
   // auto-clear on focus (clear prefilled)
   document.querySelectorAll('input').forEach(inp => {
@@ -96,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   addItemBtn.addEventListener('click', () => {
     const tr = document.createElement('tr');
-    var inner = '';
+    let inner = '';
     inner += '<td class="idx"></td>';
     inner += '<td data-label="Description"><input class="desc" placeholder="Item description"></td>';
     inner += '<td data-label="HSN"><input class="hsn" placeholder=""></td>';
@@ -124,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('itemsTable').addEventListener('input', recalc);
 
+  // GST lookup triggers
   let gstTimeout = null;
   buyerGST.addEventListener('input', function(e){
     var v = e.target.value.trim();
@@ -135,13 +157,55 @@ document.addEventListener('DOMContentLoaded', () => {
   function lookupAndFillGST(gstin){
     fetchGST(gstin).then(function(res){
       if(res){
-        if(res.tradeName) document.getElementById('buyerName').value = res.tradeName;
-        if(res.address) document.getElementById('buyerAddress').value = res.address;
-        if(res.state) document.getElementById('buyerState').value = res.state;
+        if(res.tradeName) buyerName.value = res.tradeName;
+        if(res.address) buyerAddress.value = res.address;
+        if(res.state) buyerState.value = res.state;
       }
     });
   }
 
+  // Generate PDF using html2pdf and save as invoice.pdf
+  function generatePdf() {
+    recalc();
+    const opt = {
+      margin:       12,
+      filename:     'invoice.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    return html2pdf().set(opt).from(invoiceBox).save();
+  }
+
+  // WhatsApp button: generate PDF then open wa.me link with message
+  whatsappBtn.addEventListener('click', function(){
+    const numRaw = document.getElementById('buyerWhats').value.trim();
+    if(!numRaw){
+      alert('Please enter customer WhatsApp number in the "WhatsApp (optional)" field first.');
+      return;
+    }
+    let digits = numRaw.replace(/\D/g,'');
+    if(digits.length === 10) digits = '91' + digits;
+    if(digits.length < 11){
+      alert('Please enter a valid WhatsApp number including country code (or 10-digit Indian number).');
+      return;
+    }
+    generatePdf().then(function(){ 
+      const message = encodeURIComponent('Hello! Please find your invoice from Shri Enterprise.');
+      const wa = 'https://wa.me/' + digits + '?text=' + message;
+      window.open(wa, '_blank');
+    }).catch(function(err){
+      console.error(err);
+      alert('Could not generate PDF. Try downloading manually and then sending via WhatsApp.');
+    });
+  });
+
+  // Download PDF button
+  generatePdfBtn.addEventListener('click', function(){
+    generatePdf().catch(function(err){ console.error(err); alert('PDF generation failed: ' + err.message); });
+  });
+
+  // Reset logic
   resetBtn.addEventListener('click', function(){
     if (!confirm('Reset the invoice? All inputs will be cleared.')) return;
     document.querySelectorAll('input').forEach(function(i){ i.value = ''; });
@@ -153,5 +217,4 @@ document.addEventListener('DOMContentLoaded', () => {
     recalc();
   });
 
-  printBtn.addEventListener('click', function(){ recalc(); window.print(); });
 });
