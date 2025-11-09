@@ -1,49 +1,47 @@
 
 :root{
-  --blue-100:#e7f3fc;
-  --blue-500:#1f4e79;
-  --blue-700:#0b2447;
-  --muted:#6b7280;
-  --border:#dbe9f6;
+  --bg:#f7f7f7;
+  --border:#d9d9d9;
+  --accent:#333;
+  --muted:#666;
 }
 *{box-sizing:border-box}
-body{font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif;background:#f3f6f9;padding:18px;color:#111}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);padding:16px;color:var(--accent)}
 .page-wrap{max-width:900px;margin:0 auto}
-.invoice-box{background:#fff;border:1px solid var(--border);padding:18px;border-radius:6px;box-shadow:0 6px 18px rgba(12,38,73,0.06)}
-.inv-header{display:flex;gap:12px;align-items:flex-start;border-bottom:2px solid var(--blue-100);padding-bottom:12px;margin-bottom:12px}
-.logo-wrap{flex:0 0 110px}
-.logo-wrap img{width:100px;height:100px;object-fit:cover;border-radius:6px;border:1px solid #e6eef6;background:#fff;padding:4px}
-.company-wrap{flex:1;padding-left:6px}
-.company-wrap h1{margin:0;color:var(--blue-700);font-size:20px;letter-spacing:1px}
+.invoice-box{background:#fff;border:1px solid var(--border);padding:18px;border-radius:6px}
+.inv-header{display:flex;gap:12px;align-items:flex-start;border-bottom:1px solid #eee;padding-bottom:12px;margin-bottom:12px}
+.logo-wrap{flex:0 0 100px}
+.logo-wrap img{width:90px;height:90px;object-fit:cover;border-radius:4px}
+.company-wrap{flex:1}
+.company-wrap h1{margin:0;font-size:20px;letter-spacing:1px}
 .company-addr{color:var(--muted);margin-top:6px;font-size:13px}
 .inv-meta{flex:0 0 220px;text-align:right}
-.inv-meta h2{margin:0;color:var(--blue-500);font-size:18px}
+.inv-meta h2{margin:0;font-size:16px}
 .inv-meta label{display:block;margin-top:6px}
-.inv-meta input{padding:6px;border:1px solid #d1d5db;border-radius:4px;width:140px}
+.inv-meta input{padding:6px;border:1px solid #eaeaea;border-radius:4px;width:140px}
 
 .bill-to{display:flex;justify-content:space-between;gap:12px;margin-top:12px}
 .bill-to .left,.bill-to .right{flex:1}
-.bill-to h3{margin:0;color:var(--blue-700);font-size:15px}
-.bill-to input{display:block;margin-top:6px;padding:8px;border:1px solid #e6eef6;border-radius:4px;width:100%}
+.bill-to h3{margin:0;font-size:15px}
+.bill-to input{display:block;margin-top:6px;padding:8px;border:1px solid #eee;border-radius:4px;width:100%}
 
 .items{width:100%;border-collapse:collapse;margin-top:12px}
-.items th,.items td{border:1px solid var(--border);padding:8px;font-size:13px;text-align:center}
-.items th{background:var(--blue-100);color:var(--blue-700);font-weight:700}
-.items input{width:100%;padding:6px;border:1px solid #e6eef6;border-radius:4px}
+.items th,.items td{border:1px solid var(--border);padding:8px;font-size:13px;text-align:center;vertical-align:middle}
+.items th{background:#fafafa;color:var(--accent);font-weight:700}
+.items input{width:100%;padding:6px;border:1px solid #f0f0f0;border-radius:4px}
 
 .controls{margin-top:12px;display:flex;gap:8px}
-.controls button{padding:8px 12px;border-radius:6px;border:none;background:var(--blue-500);color:white;cursor:pointer;box-shadow:0 2px 6px rgba(31,78,121,0.12)}
-.controls button:hover{opacity:.95}
+.controls button{padding:8px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer}
+.controls button.primary{background:#333;color:#fff;border-color:#333}
 
 .summary{margin-top:12px;float:right;width:320px}
 .summary table{width:100%;border-collapse:collapse}
-.summary td{padding:8px;border-bottom:1px dashed #eef6fb;font-size:14px}
-.summary .grand td{font-weight:800;background:var(--blue-500);color:white}
+.summary td{padding:8px;border-bottom:1px dashed #f3f3f3;font-size:14px}
+.summary .grand td{font-weight:800;background:#333;color:white;padding:10px}
 
 .inwords{margin-top:10px;font-size:13px;color:#333}
 
-.inv-footer{clear:both;margin-top:28px;padding-top:12px;border-top:1px dashed #eef6fb;color:var(--muted);font-size:13px}
-.inv-footer .bank{font-weight:600;color:var(--blue-700)}
+.inv-footer{clear:both;margin-top:28px;padding-top:12px;border-top:1px dashed #f3f3f3;color:var(--muted);font-size:13px}
 
 /* responsive */
 @media (max-width:760px){
@@ -53,21 +51,23 @@ body{font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif;background:#f3f6f9;pa
   .logo-wrap img{width:80px;height:80px}
   .summary{width:100%;float:none}
   .bill-to{flex-direction:column}
+  .items thead{display:none}
+  .items tr{display:block;margin-bottom:8px;border:1px solid #eee;padding:8px;border-radius:6px}
+  .items td{display:block;text-align:left;border:none;padding:6px}
+  .items td:before{content:attr(data-label);font-weight:600;display:inline-block;width:120px}
 }
 
 /* print styles */
 @media print{
   body{background:white;padding:0}
   .page-wrap{margin:0}
-  .controls, .del, #addItem, #printBtn{display:none !important}
+  .controls, .del, #resetBtn, #addItem, #printBtn{display:none !important}
   input{border:none;box-shadow:none;padding:0;margin:0}
-  .logo-wrap img{border:none}
-  .invoice-box{box-shadow:none;border:1px solid #cfe8fb;padding:12px}
+  .invoice-box{box-shadow:none;border:1px solid #ddd;padding:12px}
   .items th,.items td{font-size:12px;padding:6px}
   .inv-meta input{border:none}
   .bill-to input{border:none}
   .items input{border:none}
   .inv-footer{page-break-inside:avoid}
-  /* ensure page fits A4 */
   @page { size: A4; margin: 12mm; }
 }

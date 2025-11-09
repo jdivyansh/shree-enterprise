@@ -17,7 +17,7 @@
         <h1>SHRI ENTERPRISES</h1>
         <div class="company-addr">
           Shop No. 10-11, Bhagat Complex, Govind Pura, Vatika Road, Sanganer, Jaipur<br>
-          M: <span class="bold">8949085260 / 9829165560</span> | GSTIN: <span class="bold">08AAQPJ4289C2ZE</span>
+          GSTIN: <span class="bold">08AAQPJ4289C2ZE</span> | M: <span class="bold">8560037815</span>
         </div>
       </div>
       <div class="inv-meta">
@@ -30,17 +30,19 @@
     <section class="bill-to">
       <div class="left">
         <h3>Bill To</h3>
-        <input id="buyerName" placeholder="Buyer / Company Name"/>
-        <input id="buyerAddress" placeholder="Buyer Address (line)" />
+        <label>GSTIN: <input id="buyerGST" maxlength="15" placeholder="15-char GSTIN"/></label>
+        <div id="gstStatus" class="status"></div>
+        <label>Buyer Name: <input id="buyerName" placeholder="Buyer / Company Name"/></label>
+        <label>Address: <input id="buyerAddress" placeholder="Buyer Address (line)"/></label>
         <div class="row">
-          <input id="buyerGST" placeholder="Buyer GSTIN (optional)" />
-          <input id="buyerPhone" placeholder="Buyer Phone (optional)" />
+          <label>State: <input id="buyerState" placeholder="State"/></label>
+          <label>Phone: <input id="buyerPhone" placeholder="Phone"/></label>
         </div>
       </div>
       <div class="right">
         <h3>Transport / Delivery</h3>
-        <input id="vehicle" placeholder="Vehicle / LR No." />
-        <input id="eway" placeholder="E-way Bill / Reference" />
+        <label>Vehicle / LR No.: <input id="vehicle" placeholder="Vehicle / LR No." /></label>
+        <label>E-way / Ref: <input id="eway" placeholder="E-way Bill / Reference" /></label>
       </div>
     </section>
 
@@ -48,10 +50,9 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Description of Goods</th>
+          <th style="width:38%;">Description of Goods</th>
           <th>HSN/SAC</th>
           <th>Qty</th>
-          <th>Unit</th>
           <th>Rate (₹)</th>
           <th>Amount (₹)</th>
           <th></th>
@@ -63,7 +64,6 @@
           <td><input class="desc" value="Sample Item"></td>
           <td><input class="hsn" value=""></td>
           <td><input class="qty" type="number" min="0" value="1"></td>
-          <td><input class="unit" value="pcs"></td>
           <td><input class="rate" type="number" min="0" value="0"></td>
           <td class="amount">0.00</td>
           <td><button class="del">❌</button></td>
@@ -73,7 +73,8 @@
 
     <div class="controls">
       <button id="addItem">➕ Add Item</button>
-      <button id="printBtn">🖨️ Print / Save as PDF</button>
+      <button id="printBtn" class="primary">🖨️ Print / Save as PDF</button>
+      <button id="resetBtn">Reset</button>
     </div>
 
     <aside class="summary">
@@ -89,8 +90,8 @@
     <footer class="inv-footer">
       <div class="bank">
         <strong>Bank Details :</strong><br>
-        HDFC Bank, Maharani Farm, Jaipur<br>
-        A/c No.: 50200103019045 | IFSC: HDFC0007048
+        Ujjivan Small Finance Bank, Sanganer, Tonk Road, Jaipur<br>
+        A/c No.: 2338120020000208 | IFSC: UJVN0002338
       </div>
       <div class="disclaimer">This is a computer generated invoice. Subject to Jodhpur Jurisdiction.</div>
     </footer>
