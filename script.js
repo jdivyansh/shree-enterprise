@@ -1,11 +1,10 @@
 
-// Configuration: set your GST API details here
+// AppyFlow GST configuration (Key inserted)
 const GST_API = {
-  endpoint: 'https://api.knowyourgst.com/gstin/', // << replace with provider endpoint
-  apiKey: '', // << paste your API key here
-  useQuery: true, // if the provider requires key as query param
-  keyParam: 'api_key', // query param name when useQuery=true
-  headerName: 'x-api-key' // header name if useQuery=false
+  endpoint: 'https://appyflow.in/api/verifyGST',
+  apiKey: '66LKC7ZBaxNdRXzWirfiurMcxj43',
+  useQuery: true,
+  keyParam: 'key'
 };
 
 function showStatus(msg, ok) {
@@ -19,30 +18,16 @@ async function fetchGST(gstin) {
   if (clean.length !== 15) { showStatus('GSTIN must be 15 characters', false); return null; }
   showStatus('Looking up GSTIN...', true);
   try {
-    let url = GST_API.endpoint + encodeURIComponent(clean);
+    let url = GST_API.endpoint + '?gstin=' + encodeURIComponent(clean);
     if (GST_API.useQuery && GST_API.apiKey) {
-      const sep = url.includes('?') ? '&' : '?';
-      url += sep + encodeURIComponent(GST_API.keyParam) + '=' + encodeURIComponent(GST_API.apiKey);
+      url += '&' + encodeURIComponent(GST_API.keyParam) + '=' + encodeURIComponent(GST_API.apiKey);
     }
-    const headers = {};
-    if (!GST_API.useQuery && GST_API.apiKey) {
-      headers[GST_API.headerName || 'x-api-key'] = GST_API.apiKey;
-    }
-    const res = await fetch(url, { headers });
-    if (!res.ok) {
-      showStatus('GST lookup failed: ' + res.statusText, false);
-      return null;
-    }
+    const res = await fetch(url);
+    if (!res.ok) { showStatus('GST lookup failed: ' + res.statusText, false); return null; }
     const data = await res.json();
-    let tradeName = data.tradeName || data.tradename || data.legalName || data.legalname || data.name || (data.result && data.result.legalName);
-    let address = '';
-    if (data.address) address = data.address;
-    else if (data.result && data.result.address) address = data.result.address;
-    else if (data.principalPlace || data.principalPlaceOfBusiness) {
-      const p = data.principalPlace || data.principalPlaceOfBusiness;
-      address = [p.addressLine1, p.addressLine2, p.city, p.pincode].filter(Boolean).join(', ');
-    }
-    let state = data.state || (data.result && data.result.state) || '';
+    const tradeName = data.tradeName || data.legalName || data.legalname || data.legalName || (data.result && data.result.legalName);
+    const address = data.address || data.address_line || (data.result && data.result.address) || '';
+    const state = data.state || (data.result && data.result.state) || '';
     showStatus('Fetched from GST portal', true);
     return { tradeName, address, state, raw: data };
   } catch (e) {
@@ -78,10 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const grandEl = document.getElementById('grandTotal');
   const inWordsEl = document.getElementById('inWords');
   const buyerGST = document.getElementById('buyerGST');
-  const buyerName = document.getElementById('buyerName');
-  const buyerAddress = document.getElementById('buyerAddress');
-  const buyerState = document.getElementById('buyerState');
 
+  // auto-clear on focus (clear prefilled)
   document.querySelectorAll('input').forEach(inp => {
     inp.addEventListener('focus', (e) => { e.target.dataset.prefilled = e.target.value; e.target.value = ''; });
     inp.addEventListener('blur', (e) => { if(e.target.value==='') e.target.value = e.target.dataset.prefilled || ''; });
@@ -113,79 +96,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
   addItemBtn.addEventListener('click', () => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="idx"></td>
-      <td data-label="Description"><input class="desc" placeholder="Item description"></td>
-      <td data-label="HSN"><input class="hsn" placeholder=""></td>
-      <td data-label="Qty"><input class="qty" type="number" min="0" value="1"></td>
-      <td data-label="Rate"><input class="rate" type="number" min="0" value="0"></td>
-      <td data-label="Amount" class="amount">0.00</td>
-      <td><button class="del">❌</button></td>
-    `;
+    var inner = '';
+    inner += '<td class="idx"></td>';
+    inner += '<td data-label="Description"><input class="desc" placeholder="Item description"></td>';
+    inner += '<td data-label="HSN"><input class="hsn" placeholder=""></td>';
+    inner += '<td data-label="Qty"><input class="qty" type="number" min="0" value="1"></td>';
+    inner += '<td data-label="Rate"><input class="rate" type="number" min="0" value="0"></td>';
+    inner += '<td data-label="Amount" class="amount">0.00</td>';
+    inner += '<td><button class="del">❌</button></td>';
+    tr.innerHTML = inner;
     itemsBody.appendChild(tr);
     tr.querySelector('.qty').addEventListener('input', recalc);
     tr.querySelector('.rate').addEventListener('input', recalc);
-    tr.querySelector('.del').addEventListener('click', () => { tr.remove(); recalc(); });
-    tr.querySelectorAll('input').forEach(inp => {
-      inp.addEventListener('focus', (e) => { e.target.dataset.prefilled = e.target.value; e.target.value = ''; });
-      inp.addEventListener('blur', (e) => { if(e.target.value==='') e.target.value = e.target.dataset.prefilled || ''; });
-    });
+    tr.querySelector('.del').addEventListener('click', function(){ tr.remove(); recalc(); });
+    tr.querySelectorAll('input').forEach(function(inp){ inp.addEventListener('focus', function(e){ e.target.dataset.prefilled = e.target.value; e.target.value = ''; }); inp.addEventListener('blur', function(e){ if(e.target.value==='') e.target.value = e.target.dataset.prefilled || ''; }); });
     recalc();
   });
 
-  itemsBody.querySelectorAll('tr').forEach(tr => {
-    tr.querySelector('.qty').addEventListener('input', recalc);
-    tr.querySelector('.rate').addEventListener('input', recalc);
-    tr.querySelector('.del').addEventListener('click', () => { tr.remove(); recalc(); });
+  itemsBody.querySelectorAll('tr').forEach(function(tr){
+    var q = tr.querySelector('.qty');
+    var r = tr.querySelector('.rate');
+    var d = tr.querySelector('.del');
+    if(q) q.addEventListener('input', recalc);
+    if(r) r.addEventListener('input', recalc);
+    if(d) d.addEventListener('click', function(){ tr.remove(); recalc(); });
   });
 
   document.getElementById('itemsTable').addEventListener('input', recalc);
 
   let gstTimeout = null;
-  buyerGST.addEventListener('input', (e) => {
-    const v = e.target.value.trim();
+  buyerGST.addEventListener('input', function(e){
+    var v = e.target.value.trim();
     if (gstTimeout) clearTimeout(gstTimeout);
-    if (v.length === 15) {
-      gstTimeout = setTimeout(() => { lookupAndFillGST(v); }, 500);
-    }
+    if (v.length === 15) { gstTimeout = setTimeout(function(){ lookupAndFillGST(v); }, 500); }
   });
-  buyerGST.addEventListener('blur', (e) => {
-    const v = e.target.value.trim();
-    if (v.length === 15) lookupAndFillGST(v);
-  });
+  buyerGST.addEventListener('blur', function(e){ var v = e.target.value.trim(); if (v.length === 15) lookupAndFillGST(v); });
 
-  async function lookupAndFillGST(gstin) {
-    const res = await fetchGST(gstin);
-    if (res) {
-      if (res.tradeName) buyerName.value = res.tradeName;
-      if (res.address) buyerAddress.value = res.address;
-      if (res.state) buyerState.value = res.state;
-    }
+  function lookupAndFillGST(gstin){
+    fetchGST(gstin).then(function(res){
+      if(res){
+        if(res.tradeName) document.getElementById('buyerName').value = res.tradeName;
+        if(res.address) document.getElementById('buyerAddress').value = res.address;
+        if(res.state) document.getElementById('buyerState').value = res.state;
+      }
+    });
   }
 
-  resetBtn.addEventListener('click', () => {
+  resetBtn.addEventListener('click', function(){
     if (!confirm('Reset the invoice? All inputs will be cleared.')) return;
-    document.querySelectorAll('input').forEach(i => i.value = '');
+    document.querySelectorAll('input').forEach(function(i){ i.value = ''; });
     document.getElementById('invoiceDate').valueAsDate = new Date();
-    itemsBody.innerHTML = `
-      <tr>
-        <td class="idx">1</td>
-        <td data-label="Description"><input class="desc" value="Sample Item"></td>
-        <td data-label="HSN"><input class="hsn" value=""></td>
-        <td data-label="Qty"><input class="qty" type="number" min="0" value="1"></td>
-        <td data-label="Rate"><input class="rate" type="number" min="0" value="0"></td>
-        <td data-label="Amount" class="amount">0.00</td>
-        <td><button class="del">❌</button></td>
-      </tr>
-    `;
-    document.querySelectorAll('.qty').forEach(q => q.addEventListener('input', recalc));
-    document.querySelectorAll('.rate').forEach(r => r.addEventListener('input', recalc));
-    document.querySelectorAll('.del').forEach(d => d.addEventListener('click', (e)=>{ e.target.closest('tr').remove(); recalc(); }));
+    itemsBody.innerHTML = '<tr><td class="idx">1</td><td data-label="Description"><input class="desc" value="Sample Item"></td><td data-label="HSN"><input class="hsn" value=""></td><td data-label="Qty"><input class="qty" type="number" min="0" value="1"></td><td data-label="Rate"><input class="rate" type="number" min="0" value="0"></td><td data-label="Amount" class="amount">0.00</td><td><button class="del">❌</button></td></tr>';
+    document.querySelectorAll('.qty').forEach(function(q){ q.addEventListener('input', recalc); });
+    document.querySelectorAll('.rate').forEach(function(r){ r.addEventListener('input', recalc); });
+    document.querySelectorAll('.del').forEach(function(d){ d.addEventListener('click', function(e){ e.target.closest('tr').remove(); recalc(); }); });
     recalc();
   });
 
-  printBtn.addEventListener('click', () => {
-    recalc();
-    window.print();
-  });
+  printBtn.addEventListener('click', function(){ recalc(); window.print(); });
 });
