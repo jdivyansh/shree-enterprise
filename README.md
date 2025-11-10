@@ -1,14 +1,13 @@
-Shri Enterprise - Invoice Generator (Final Look)
+Shri Enterprise - Single View Invoice (A4)
 
-Files included:
+Files:
 - index.html
 - style.css
 - script.js
-- logo.jpg
-- README.md
-- .nojekyll
+- logo.png
 
-Instructions:
-1. Upload all files to a repository named jdivyansh.github.io or open index.html locally.
-2. Fill buyer and item details, click 'Preview Invoice' to render the final bill, then 'Download PDF' to save invoice.pdf (A4).
-3. Taxes: CGST 9% and SGST 9% (total 18%) auto-calculated from taxable values.
+Usage:
+1. Open index.html in browser or upload to GitHub Pages.
+2. Click into any field to clear its pre-filled sample text. Add/edit items as needed.
+3. Click 'Download Invoice (PDF)' to generate invoice.pdf formatted for A4.
+4. Edit bank details or company details directly in index.html if needed.

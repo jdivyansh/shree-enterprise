@@ -1,100 +1,88 @@
-// Invoice generator with GST calculation (9% CGST + 9% SGST)
+// Single-view invoice app: clears defaults on focus, auto-calc GST, direct PDF (A4)
 document.addEventListener('DOMContentLoaded', ()=>{
-  document.getElementById('invoiceDate').valueAsDate = new Date();
+  // set today's date
+  const d = new Date(); document.getElementById('invoiceDate').valueAsDate = d;
+
+  // clear-on-focus behavior for inputs with data-default
+  document.querySelectorAll('input[data-default]').forEach(inp => {
+    inp.addEventListener('focus', (e)=>{
+      if(e.target.value === e.target.getAttribute('data-default')) e.target.value = '';
+    });
+    inp.addEventListener('blur', (e)=>{
+      if(e.target.value.trim() === '') e.target.value = e.target.getAttribute('data-default') || '';
+    });
+  });
+
+  // add listeners for dynamic items and calculation
   document.getElementById('addItem').addEventListener('click', addItem);
-  document.getElementById('previewBtn').addEventListener('click', buildPreview);
-  document.getElementById('downloadBtn').addEventListener('click', downloadPdf);
   document.getElementById('itemsTable').addEventListener('input', recalc);
+  document.getElementById('downloadBtn').addEventListener('click', downloadPdf);
+
   recalc();
 });
 
 function addItem(){
   const tbody = document.getElementById('itemsBody');
   const tr = document.createElement('tr');
-  tr.innerHTML = '<td class="idx"></td><td><input class="desc" placeholder="Description"></td><td><input class="hsn"></td><td><input class="qty" type="number" value="1"></td><td><input class="rate" type="number" value="0"></td><td class="taxable">0.00</td>';
+  tr.innerHTML = '<td class="sl"></td><td><input class="desc" data-default="Sample Item" value="Sample Item"></td><td><input class="hsn" data-default="" value=""></td><td><input class="qty" type="number" data-default="1" value="1" min="0"></td><td><input class="rate" type="number" data-default="0" value="0" min="0"></td><td class="taxable">0.00</td>';
   tbody.appendChild(tr);
+  // attach clear-on-focus to new inputs
+  tr.querySelectorAll('input[data-default]').forEach(inp=>{
+    inp.addEventListener('focus', (e)=>{ if(e.target.value === e.target.getAttribute('data-default')) e.target.value=''; });
+    inp.addEventListener('blur', (e)=>{ if(e.target.value.trim()==='') e.target.value = e.target.getAttribute('data-default')||''; });
+  });
   recalc();
 }
 
 function recalc(){
-  let subtotal=0;
+  let subtotal = 0;
   const rows = document.querySelectorAll('#itemsBody tr');
   rows.forEach((r,i)=>{
-    const qty = parseFloat(r.querySelector('.qty')?.value||0)||0;
-    const rate = parseFloat(r.querySelector('.rate')?.value||0)||0;
-    const amt = qty*rate;
+    const qty = parseFloat(r.querySelector('.qty')?.value || 0) || 0;
+    const rate = parseFloat(r.querySelector('.rate')?.value || 0) || 0;
+    const amt = qty * rate;
     r.querySelector('.taxable').textContent = amt.toFixed(2);
-    r.querySelector('.idx').textContent = i+1;
+    r.querySelector('.sl').textContent = i+1;
     subtotal += amt;
   });
   window.subtotal = subtotal;
-  window.cgst = subtotal*0.09;
-  window.sgst = subtotal*0.09;
-  window.totalTax = window.cgst + window.sgst;
-  window.grand = subtotal + window.totalTax;
-  return {subtotal:window.subtotal,cgst:window.cgst,sgst:window.sgst,grand:window.grand};
-}
-
-function buildPreview(){
-  recalc();
-  const invNo = document.getElementById('invoiceNo').value;
-  const invDate = document.getElementById('invoiceDate').value;
-  const buyerName = document.getElementById('buyerName').value || '---';
-  const buyerGST = document.getElementById('buyerGST').value || '---';
-  const buyerAddress = document.getElementById('buyerAddress').value || '---';
-  const buyerState = document.getElementById('buyerState').value || '---';
-
-  let rows='';
-  document.querySelectorAll('#itemsBody tr').forEach(r=>{
-    const desc = r.querySelector('.desc')?.value||'';
-    const hsn = r.querySelector('.hsn')?.value||'';
-    const qty = r.querySelector('.qty')?.value||'';
-    const rate = r.querySelector('.rate')?.value||'';
-    const amt = r.querySelector('.taxable')?.textContent||'0.00';
-    rows += `<tr><td style="padding:6px">${desc}</td><td style="padding:6px;text-align:center">${hsn}</td><td style="padding:6px;text-align:center">${qty}</td><td style="padding:6px;text-align:right">${rate}</td><td style="padding:6px;text-align:right">${amt}</td></tr>`;
-  });
-
-  const preview = `
-  <div class="inv-print" style="font-family:Arial,Helvetica,sans-serif;color:#111">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start">
-      <div style="max-width:60%">
-        <strong>SHRI ENTERPRISES</strong><br>
-        Shop No. 10-11, Bhagat Complex, Govind Pura, Vatika Road, Sanganer, Jaipur<br>
-        GSTIN: 08AAQPJ4289C2ZE<br>
-        Phone: 9829165560, 8949085260
-      </div>
-      <div style="text-align:right">
-        <div><strong>Invoice No:</strong> ${invNo}</div>
-        <div><strong>Date:</strong> ${invDate}</div>
-      </div>
-    </div>
-    <hr style="margin:10px 0;border:none;border-top:1px solid #ddd"/>
-    <div><strong>Bill To:</strong><br>${buyerName}<br>${buyerAddress}<br>GSTIN: ${buyerGST}<br>State: ${buyerState}</div>
-    <table style="width:100%;border-collapse:collapse;margin-top:12px;border:1px solid #eee">
-      <thead style="background:#f7fbff;color:#1f4e79"><tr><th style="padding:8px">Description</th><th style="padding:8px">HSN/SAC</th><th style="padding:8px">Qty</th><th style="padding:8px;text-align:right">Rate</th><th style="padding:8px;text-align:right">Taxable Value</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <div style="margin-top:12px;float:right;width:360px;border-top:1px solid #f1f7ff;padding-top:8px">
-      <div style="display:flex;justify-content:space-between"><div>Taxable Value</div><div>₹ ${window.subtotal.toFixed(2)}</div></div>
-      <div style="display:flex;justify-content:space-between"><div>CGST @9%</div><div>₹ ${window.cgst.toFixed(2)}</div></div>
-      <div style="display:flex;justify-content:space-between"><div>SGST @9%</div><div>₹ ${window.sgst.toFixed(2)}</div></div>
-      <div style="display:flex;justify-content:space-between;font-weight:700;margin-top:6px"><div>Total</div><div>₹ ${window.grand.toFixed(2)}</div></div>
-    </div>
-    <div style="clear:both;margin-top:120px;font-size:13px;color:#555">Declaration: We declare that this invoice shows in actual price of the goods described and that all particulars are true and correct.</div>
-    <div style="margin-top:20px;display:flex;justify-content:space-between;align-items:center">
-      <div><strong>Bank Details:</strong><br>UJJIVAN SMALL FINANCE BANK<br>Branch: Sanganer, Tonk Road, Jaipur<br>A/C No.: 2338120020000208<br>IFSC: UJVN0002338</div>
-      <div style="text-align:center"><div>For: SHRI ENTERPRISES</div><div style="margin-top:60px">Authorised Signatory</div></div>
-    </div>
-  </div>
-  `;
-
-  document.getElementById('previewArea').innerHTML = preview;
-  document.getElementById('previewArea').scrollIntoView({behavior:'smooth'});
+  window.cgst = +(subtotal * 0.09);
+  window.sgst = +(subtotal * 0.09);
+  window.totalTax = +(window.cgst + window.sgst);
+  window.grand = +(subtotal + window.totalTax);
+  // round off to 2 decimals and compute roundoff
+  const roundedGrand = Math.round(window.grand * 100) / 100;
+  const roundoff = +(roundedGrand - window.grand).toFixed(2);
+  document.getElementById('subtotal').textContent = window.subtotal.toFixed(2);
+  document.getElementById('cgst').textContent = window.cgst.toFixed(2);
+  document.getElementById('sgst').textContent = window.sgst.toFixed(2);
+  document.getElementById('totaltax').textContent = window.totalTax.toFixed(2);
+  document.getElementById('roundoff').textContent = roundoff.toFixed(2);
+  document.getElementById('grand').textContent = (window.grand + roundoff).toFixed(2);
+  // amount in words (simple)
+  document.getElementById('inWords').value = toWords(Math.round(window.grand + roundoff)) + ' only';
+  return {subtotal:window.subtotal, cgst:window.cgst, sgst:window.sgst, totalTax:window.totalTax, grand:window.grand};
 }
 
 function downloadPdf(){
-  const el = document.getElementById('previewArea');
-  if(!el.innerHTML.trim()){ alert('Please click Preview Invoice first'); return; }
+  recalc();
+  const el = document.getElementById('invoiceCard');
   const opt = { margin:12, filename:'invoice.pdf', image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} };
   html2pdf().set(opt).from(el).save();
+}
+
+// simple number to words for rupees (handles up to crores)
+function toWords(num){
+  if(num===0) return 'zero rupees';
+  const a=['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+  const b=['','', 'twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+  function inWords(n){
+    if(n<20) return a[n];
+    if(n<100) return b[Math.floor(n/10)] + (n%10 ? ' ' + a[n%10] : '');
+    if(n<1000) return a[Math.floor(n/100)] + ' hundred' + (n%100 ? ' and ' + inWords(n%100) : '');
+    if(n<100000) return inWords(Math.floor(n/1000)) + ' thousand ' + (n%1000 ? inWords(n%1000) : '');
+    if(n<10000000) return inWords(Math.floor(n/100000)) + ' lakh ' + (n%100000 ? inWords(n%100000) : '');
+    return inWords(Math.floor(n/10000000)) + ' crore ' + (n%10000000 ? inWords(n%10000000) : '');
+  }
+  return inWords(num) + ' rupees';
 }

@@ -3,89 +3,88 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Shri Enterprise - Invoice Generator</title>
+<title>Shri Enterprise - Invoice</title>
 <link rel="stylesheet" href="style.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-  <div class="app">
-    <header class="app-header">
-      <div class="brand">
-        <img src="logo.jpg" alt="Shri Enterprise logo" class="logo"/>
-        <div class="brand-text">
-          <div class="gst">GSTIN: <strong>08AAQPJ4289C2ZE</strong></div>
+  <div class="page-frame">
+    <div class="invoice-card" id="invoiceCard">
+      <header class="header">
+        <div class="logo-wrap"><img src="logo.png" alt="Shri Enterprise logo" class="logo"></div>
+        <div class="title-wrap">
+          <div class="gstline">GSTIN : <strong>08AAQPJ4289C2ZE</strong></div>
           <h1>SHRI ENTERPRISES</h1>
           <div class="addr">Shop No. 10-11, Bhagat Complex, Govind Pura, Vatika Road, Sanganer, Jaipur</div>
           <div class="phones">M: 9829165560, 8949085260</div>
         </div>
-      </div>
-      <div class="meta">
-        <label>Invoice No: <input id="invoiceNo" value="INV-001"></label>
-        <label>Date: <input id="invoiceDate" type="date"></label>
-      </div>
-    </header>
-
-    <main class="content">
-      <section class="form-section">
-        <h2>Invoice Details</h2>
-        <div class="grid">
-          <div class="box seller">
-            <strong>Seller</strong><br>
-            SHRI ENTERPRISES<br>
-            Shop No. 10-11, Bhagat Complex, Govind Pura, Vatika Road, Sanganer, Jaipur<br>
-            GSTIN: 08AAQPJ4289C2ZE<br>
-            State: Rajasthan (08)
-          </div>
-          <div class="box buyer">
-            <label>Buyer Name: <input id="buyerName" placeholder="Customer name"></label>
-            <label>Buyer GSTIN: <input id="buyerGST" maxlength="15" placeholder="GSTIN"></label>
-            <label>Address: <input id="buyerAddress" placeholder="Address"></label>
-            <div class="row"><label>State: <input id="buyerState" placeholder="State"></label><label>Phone: <input id="buyerPhone" placeholder="Phone"></label></div>
-          </div>
+        <div class="meta">
+          <label>Invoice No:<input id="invoiceNo" data-default="INV-001" value="INV-001"></label>
+          <label>Date:<input id="invoiceDate" type="date"></label>
         </div>
+      </header>
 
-        <h3>Items</h3>
-        <div class="table-wrap">
-          <table id="itemsTable" class="items">
-            <thead>
-              <tr>
-                <th>#</th><th>Description</th><th>HSN/SAC</th><th>Qty</th><th>Rate (₹)</th><th>Taxable Value (₹)</th>
-              </tr>
-            </thead>
-            <tbody id="itemsBody">
-              <tr>
-                <td class="idx">1</td>
-                <td><input class="desc" value="Sample Item"></td>
-                <td><input class="hsn"></td>
-                <td><input class="qty" type="number" min="0" value="1"></td>
-                <td><input class="rate" type="number" min="0" value="0"></td>
-                <td class="taxable">0.00</td>
-              </tr>
-            </tbody>
+      <section class="customer">
+        <div class="cust-left box">
+          <label>Customer Name:<input id="buyerName" data-default="Customer Name" value="Customer Name"></label>
+          <label>GSTIN:<input id="buyerGST" data-default="Buyer GSTIN" value="Buyer GSTIN" maxlength="15"></label>
+          <label>Address:<input id="buyerAddress" data-default="Address line" value="Address line"></label>
+        </div>
+        <div class="cust-right box">
+          <label>State:<input id="buyerState" data-default="State" value="State"></label>
+          <label>Phone:<input id="buyerPhone" data-default="Phone" value="Phone"></label>
+          <label>Invoice Value (in words):<input id="inWords" readonly></label>
+        </div>
+      </section>
+
+      <section class="items">
+        <table class="items-table" id="itemsTable">
+          <thead>
+            <tr><th>Sl</th><th>Description of Goods</th><th>HSN Code</th><th>Qty</th><th>Rate</th><th>Taxable Value</th></tr>
+          </thead>
+          <tbody id="itemsBody">
+            <tr>
+              <td class="sl">1</td>
+              <td><input class="desc" data-default="Sample Item" value="Sample Item"></td>
+              <td><input class="hsn" data-default="" value=""></td>
+              <td><input class="qty" type="number" data-default="1" value="1" min="0"></td>
+              <td><input class="rate" type="number" data-default="0" value="0" min="0"></td>
+              <td class="taxable">0.00</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="items-actions">
+          <button id="addItem">+ Add Item</button>
+          <button id="downloadBtn" class="primary">Download Invoice (PDF)</button>
+        </div>
+      </section>
+
+      <section class="summary box">
+        <div class="left-col">
+          <table class="summary-table">
+            <tr><td>Total Amount Before Tax</td><td>₹ <span id="subtotal">0.00</span></td></tr>
+            <tr><td>Add. CGST @9%</td><td>₹ <span id="cgst">0.00</span></td></tr>
+            <tr><td>Add. SGST @9%</td><td>₹ <span id="sgst">0.00</span></td></tr>
+            <tr><td><strong>Total Tax</strong></td><td><strong>₹ <span id="totaltax">0.00</span></strong></td></tr>
+            <tr><td>Round Off</td><td>₹ <span id="roundoff">0.00</span></td></tr>
+            <tr class="grand"><td>Total Amount After Tax</td><td>₹ <span id="grand">0.00</span></td></tr>
           </table>
         </div>
-        <div class="actions">
-          <button id="addItem">+ Add Item</button>
-          <button id="previewBtn" class="primary">Preview Invoice</button>
-          <button id="downloadBtn">Download PDF</button>
+        <div class="right-col">
+          <div class="bank box small">
+            <strong>BANK DETAILS :</strong><br>
+            Bank Name: HDFC Bank<br>
+            A/C No.: 000123456789<br>
+            IFSC: HDFC0001234<br>
+            Branch: Jaipur
+          </div>
+          <div class="declaration small">
+            Declaration: We declare that this invoice shows in actual price of the goods described and that all particulars are true and correct.<br>SUBJECT TO JAIPUR JURISDICTION
+          </div>
         </div>
       </section>
 
-      <section class="preview-section">
-        <div id="previewArea" class="invoice-preview"></div>
-      </section>
-    </main>
-
-    <footer class="app-footer">
-      <div class="bank">
-        <strong>Bank Details :</strong><br>
-        UJJIVAN SMALL FINANCE BANK<br>
-        Branch: Sanganer, Tonk Road, Jaipur<br>
-        A/C No.: 2338120020000208<br>
-        IFSC: UJVN0002338
-      </div>
-      <div class="decl">Declaration: We declare that this invoice shows in actual price of the goods described and that all particulars are true and correct. SUBJECT TO JAIPUR JURISDICTION</div>
-    </footer>
+    </div>
   </div>
 
 <script src="script.js"></script>
