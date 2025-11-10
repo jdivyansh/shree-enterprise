@@ -3,70 +3,86 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Shri Enterprise - Billing</title>
+<title>Shri Enterprises - Invoice</title>
 <link rel="stylesheet" href="style.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 </head>
 <body>
   <div class="page-wrap">
     <div class="invoice-app">
-      <header class="top">
-        <div class="logo"><img src="logo.jpg" alt="Shri Enterprise"></div>
-        <div class="company">
-          <h1>SHRI ENTERPRISE</h1>
-          <div class="small">Shop No. 10-11, Bhagat Complex, Govind Pura, Vatika Road, Sanganer, Jaipur</div>
-          <div class="small">GSTIN: 08AAQPJ4289C2ZE | M: 8560037815</div>
+      <header class="inv-header">
+        <div class="left">
+          <img src="logo.jpg" alt="logo" class="logo"/>
         </div>
-        <div class="meta">
-          <label>Invoice No: <input id="invoiceNo" value="INV-001"></label>
-          <label>Date: <input id="invoiceDate" type="date"></label>
+        <div class="center">
+          <div class="gstline">GSTIN : <strong>08AAQPJ4289C2ZE</strong></div>
+          <h1>SHRI ENTERPRISES</h1>
+          <div class="addr">Shop No. 10-11, Bhagat Complex, Govind Pura, Vatika Road, Sanganer, Jaipur</div>
+          <div class="phones">M: 9829165560, 8949085260</div>
+        </div>
+        <div class="right meta">
+          <div><label>Invoice No: <input id="invoiceNo" value="INV-001"></label></div>
+          <div><label>Date: <input id="invoiceDate" type="date"></label></div>
         </div>
       </header>
 
-      <section class="form-area">
-        <div class="left">
-          <h3>Bill To</h3>
-          <label>GSTIN: <input id="buyerGST" maxlength="15" placeholder="Enter GSTIN"/></label>
-          <div id="gstStatus" class="status"></div>
-          <label>Name: <input id="buyerName" placeholder="Buyer name"/></label>
-          <label>Address: <input id="buyerAddress" placeholder="Address"/></label>
-          <div class="row">
-            <label>State: <input id="buyerState" placeholder="State"/></label>
-            <label>Phone: <input id="buyerPhone" placeholder="Phone"/></label>
-          </div>
+      <section class="top-grid">
+        <div class="seller box">
+          <strong>Seller:</strong><br>
+          SHRI ENTERPRISES<br>
+          Shop No. 10-11, Bhagat Complex, Govind Pura, Vatika Road, Sanganer, Jaipur<br>
+          GSTIN: 08AAQPJ4289C2ZE<br>
+          State: Rajasthan (08)<br>
+          Phone: 9829165560, 8949085260
         </div>
-
-        <div class="right">
-          <h3>Transport</h3>
-          <label>Vehicle / LR No.: <input id="vehicle"/></label>
-          <label>E-way / Ref: <input id="eway"/></label>
+        <div class="consignee box">
+          <label>Buyer Name: <input id="buyerName" placeholder="Buyer name"></label>
+          <label>Buyer GSTIN: <input id="buyerGST" maxlength="15" placeholder="GSTIN"></label>
+          <label>Buyer Address: <input id="buyerAddress" placeholder="Address"></label>
+          <label>State: <input id="buyerState" placeholder="State"></label>
         </div>
       </section>
 
-      <section class="items">
-        <table id="itemsTable">
-          <thead><tr><th>#</th><th>Description</th><th>HSN</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead>
+      <section class="items-section">
+        <table class="items" id="itemsTable">
+          <thead>
+            <tr>
+              <th>Sl No</th><th>Description of Goods</th><th>HSN/SAC</th><th>Qty</th><th>Rate (₹)</th><th>Taxable Value (₹)</th>
+            </tr>
+          </thead>
           <tbody id="itemsBody">
             <tr>
               <td class="idx">1</td>
               <td><input class="desc" value="Sample Item"></td>
-              <td><input class="hsn"></td>
-              <td><input class="qty" type="number" value="1"></td>
-              <td><input class="rate" type="number" value="0"></td>
-              <td class="amount">0.00</td>
+              <td><input class="hsn" value=""></td>
+              <td><input class="qty" type="number" min="0" value="1"></td>
+              <td><input class="rate" type="number" min="0" value="0"></td>
+              <td class="taxable">0.00</td>
             </tr>
           </tbody>
         </table>
-        <div class="items-controls">
+        <div class="items-actions">
           <button id="addItem">+ Add Item</button>
           <button id="previewBtn" class="primary">Preview Invoice</button>
-          <button id="downloadBtn">Download / Print PDF</button>
+          <button id="downloadBtn">Download PDF</button>
         </div>
       </section>
 
-      <aside id="invoicePreview" class="preview"></aside>
+      <section id="previewArea" class="preview-area"></section>
 
-      <footer class="foot">Ujjivan Small Finance Bank — A/c: 2338120020000208 | IFSC: UJVN0002338</footer>
+      <footer class="inv-footer">
+        <div class="bank">
+          <strong>BANK DETAILS :</strong><br>
+          Bank Name: UJJIVAN SMALL FINANCE BANK<br>
+          Branch: Sanganer, Tonk Road, Jaipur<br>
+          A/C No.: 2338120020000208<br>
+          IFSC: UJVN0002338
+        </div>
+        <div class="declaration">
+          Declaration: We declare that this invoice shows in actual price of the goods described and that all particulars are true and correct.<br>
+          SUBJECT TO JAIPUR JURISDICTION
+        </div>
+      </footer>
     </div>
   </div>
 <script src="script.js"></script>

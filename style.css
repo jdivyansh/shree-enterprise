@@ -1,37 +1,33 @@
-:root{
-  --bg:#f3f7fb;--blue:#1f4e79;--accent:#3b82f6;--muted:#667085;--border:#dceafc;
-}
-*{box-sizing:border-box}body{font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);margin:0;padding:18px;color:#0b2447}
-.page-wrap{max-width:980px;margin:0 auto}
-.invoice-app{background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px;box-shadow:0 8px 20px rgba(19,45,71,0.06)}
-.top{display:flex;gap:16px;align-items:center;border-bottom:2px solid #e6f0fb;padding-bottom:12px;margin-bottom:12px}
-.logo img{width:90px;height:90px;object-fit:cover;border-radius:6px;background:#fff;padding:4px;border:1px solid #eef6ff}
-.company{flex:1}
-.company h1{margin:0;color:var(--blue);font-size:20px}
-.company .small{color:var(--muted);font-size:13px;margin-top:6px}
-.meta{width:240px;text-align:right}
-.meta label{display:block;margin-bottom:6px}
-.meta input{padding:6px;border-radius:6px;border:1px solid #eef6fb;background:#fbfdff;width:140px}
-.form-area{display:flex;gap:12px;margin-top:12px}
-.left,.right{flex:1}
-.left h3,.right h3{margin:0;color:var(--blue)}
-.left input,.right input{display:block;margin-top:6px;padding:8px;border-radius:6px;border:1px solid #eef6fb;background:#fbfdff;width:100%}
-.items{margin-top:16px}
-#itemsTable{width:100%;border-collapse:collapse}
-#itemsTable th,#itemsTable td{border:1px solid var(--border);padding:8px;text-align:center}
-#itemsTable input{width:100%;padding:6px;border-radius:6px;border:1px solid #f0f6fb;background:#fbfdff}
-.items-controls{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
-button{padding:8px 12px;border-radius:8px;border:none;background:var(--accent);color:white;cursor:pointer}
+/* Invoice style matching sample */
+:root{--bg:#fafcff;--blue:#1f4e79;--accent:#3b82f6;--muted:#667085;--border:#dceafc}
+*{box-sizing:border-box}body{font-family: Arial, Helvetica, sans-serif;background:var(--bg);margin:0;padding:18px;color:#0b2447}
+.page-wrap{max-width:900px;margin:0 auto}
+.invoice-app{background:#fff;border:1px solid var(--border);padding:14px;border-radius:6px}
+.inv-header{display:flex;align-items:flex-start;gap:12px;border-bottom:3px solid #eef6ff;padding-bottom:12px;margin-bottom:12px}
+.inv-header .left{flex:0 0 110px}.logo{width:100px;height:100px;object-fit:contain}
+.center{flex:1;text-align:center}
+.center .gstline{font-size:12px;color:#333;margin-bottom:4px}
+.center h1{margin:0;color:var(--blue);font-size:28px;letter-spacing:1px}
+.center .addr{font-size:13px;color:var(--muted);margin-top:6px}
+.meta{flex:0 0 200px;text-align:right}
+.meta input{padding:6px;border:1px solid #eef6fb;border-radius:6px;background:#fbfdff;width:140px}
+.top-grid{display:flex;gap:12px;margin-top:12px}
+.box{border:1px solid var(--border);padding:10px;background:#fbfdff;font-size:13px}
+.items-section{margin-top:12px}
+.items{width:100%;border-collapse:collapse}
+.items th,.items td{border:1px solid var(--border);padding:8px;font-size:13px;text-align:left}
+.items th{background:#f7fbff;color:var(--blue);font-weight:700}
+.items input{width:100%;padding:6px;border:1px solid #eef6fb;border-radius:4px;background:#fff}
+.items .taxable{text-align:right}
+.items-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+button{padding:8px 12px;border-radius:6px;border:none;background:var(--accent);color:white;cursor:pointer}
 button.primary{background:var(--blue)}
-.preview{margin-top:18px;padding:14px;border:2px solid var(--accent);border-radius:8px;min-height:80px}
-.foot{margin-top:18px;color:var(--muted);font-size:13px}
-
-/* responsive */
-@media(max-width:760px){.top{flex-direction:row;align-items:flex-start}.meta{text-align:right;width:140px}.form-area{flex-direction:column}}
-/* print */
+.preview-area{margin-top:14px;border:2px solid #eef6ff;padding:12px;min-height:100px;background:#fff}
+.inv-footer{display:flex;justify-content:space-between;gap:12px;margin-top:14px;font-size:13px;color:var(--muted);border-top:1px dashed #eef6ff;padding-top:12px}
+@media(max-width:760px){.inv-header{flex-direction:column;align-items:flex-start}.meta{text-align:right;width:100%} .top-grid{flex-direction:column} .inv-footer{flex-direction:column}}
 @media print{
   body{background:white;padding:0}
-  .items-controls, button, input{display:none !important}
-  .invoice-app{box-shadow:none;border:1px solid #cfe8fb;padding:8px}
+  button,input{display:none !important}
+  .preview-area{border:none;padding:0}
   @page{size:A4;margin:12mm}
 }
