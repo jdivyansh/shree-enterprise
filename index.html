@@ -3,88 +3,91 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Shri Enterprises - Invoice</title>
+<title>Shri Enterprise - Invoice Generator</title>
 <link rel="stylesheet" href="style.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-  <div class="page-wrap">
-    <div class="invoice-app">
-      <header class="inv-header">
-        <div class="left">
-          <img src="logo.jpg" alt="logo" class="logo"/>
-        </div>
-        <div class="center">
-          <div class="gstline">GSTIN : <strong>08AAQPJ4289C2ZE</strong></div>
+  <div class="app">
+    <header class="app-header">
+      <div class="brand">
+        <img src="logo.jpg" alt="Shri Enterprise logo" class="logo"/>
+        <div class="brand-text">
+          <div class="gst">GSTIN: <strong>08AAQPJ4289C2ZE</strong></div>
           <h1>SHRI ENTERPRISES</h1>
           <div class="addr">Shop No. 10-11, Bhagat Complex, Govind Pura, Vatika Road, Sanganer, Jaipur</div>
           <div class="phones">M: 9829165560, 8949085260</div>
         </div>
-        <div class="right meta">
-          <div><label>Invoice No: <input id="invoiceNo" value="INV-001"></label></div>
-          <div><label>Date: <input id="invoiceDate" type="date"></label></div>
-        </div>
-      </header>
+      </div>
+      <div class="meta">
+        <label>Invoice No: <input id="invoiceNo" value="INV-001"></label>
+        <label>Date: <input id="invoiceDate" type="date"></label>
+      </div>
+    </header>
 
-      <section class="top-grid">
-        <div class="seller box">
-          <strong>Seller:</strong><br>
-          SHRI ENTERPRISES<br>
-          Shop No. 10-11, Bhagat Complex, Govind Pura, Vatika Road, Sanganer, Jaipur<br>
-          GSTIN: 08AAQPJ4289C2ZE<br>
-          State: Rajasthan (08)<br>
-          Phone: 9829165560, 8949085260
+    <main class="content">
+      <section class="form-section">
+        <h2>Invoice Details</h2>
+        <div class="grid">
+          <div class="box seller">
+            <strong>Seller</strong><br>
+            SHRI ENTERPRISES<br>
+            Shop No. 10-11, Bhagat Complex, Govind Pura, Vatika Road, Sanganer, Jaipur<br>
+            GSTIN: 08AAQPJ4289C2ZE<br>
+            State: Rajasthan (08)
+          </div>
+          <div class="box buyer">
+            <label>Buyer Name: <input id="buyerName" placeholder="Customer name"></label>
+            <label>Buyer GSTIN: <input id="buyerGST" maxlength="15" placeholder="GSTIN"></label>
+            <label>Address: <input id="buyerAddress" placeholder="Address"></label>
+            <div class="row"><label>State: <input id="buyerState" placeholder="State"></label><label>Phone: <input id="buyerPhone" placeholder="Phone"></label></div>
+          </div>
         </div>
-        <div class="consignee box">
-          <label>Buyer Name: <input id="buyerName" placeholder="Buyer name"></label>
-          <label>Buyer GSTIN: <input id="buyerGST" maxlength="15" placeholder="GSTIN"></label>
-          <label>Buyer Address: <input id="buyerAddress" placeholder="Address"></label>
-          <label>State: <input id="buyerState" placeholder="State"></label>
-        </div>
-      </section>
 
-      <section class="items-section">
-        <table class="items" id="itemsTable">
-          <thead>
-            <tr>
-              <th>Sl No</th><th>Description of Goods</th><th>HSN/SAC</th><th>Qty</th><th>Rate (₹)</th><th>Taxable Value (₹)</th>
-            </tr>
-          </thead>
-          <tbody id="itemsBody">
-            <tr>
-              <td class="idx">1</td>
-              <td><input class="desc" value="Sample Item"></td>
-              <td><input class="hsn" value=""></td>
-              <td><input class="qty" type="number" min="0" value="1"></td>
-              <td><input class="rate" type="number" min="0" value="0"></td>
-              <td class="taxable">0.00</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="items-actions">
+        <h3>Items</h3>
+        <div class="table-wrap">
+          <table id="itemsTable" class="items">
+            <thead>
+              <tr>
+                <th>#</th><th>Description</th><th>HSN/SAC</th><th>Qty</th><th>Rate (₹)</th><th>Taxable Value (₹)</th>
+              </tr>
+            </thead>
+            <tbody id="itemsBody">
+              <tr>
+                <td class="idx">1</td>
+                <td><input class="desc" value="Sample Item"></td>
+                <td><input class="hsn"></td>
+                <td><input class="qty" type="number" min="0" value="1"></td>
+                <td><input class="rate" type="number" min="0" value="0"></td>
+                <td class="taxable">0.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="actions">
           <button id="addItem">+ Add Item</button>
           <button id="previewBtn" class="primary">Preview Invoice</button>
           <button id="downloadBtn">Download PDF</button>
         </div>
       </section>
 
-      <section id="previewArea" class="preview-area"></section>
+      <section class="preview-section">
+        <div id="previewArea" class="invoice-preview"></div>
+      </section>
+    </main>
 
-      <footer class="inv-footer">
-        <div class="bank">
-          <strong>BANK DETAILS :</strong><br>
-          Bank Name: UJJIVAN SMALL FINANCE BANK<br>
-          Branch: Sanganer, Tonk Road, Jaipur<br>
-          A/C No.: 2338120020000208<br>
-          IFSC: UJVN0002338
-        </div>
-        <div class="declaration">
-          Declaration: We declare that this invoice shows in actual price of the goods described and that all particulars are true and correct.<br>
-          SUBJECT TO JAIPUR JURISDICTION
-        </div>
-      </footer>
-    </div>
+    <footer class="app-footer">
+      <div class="bank">
+        <strong>Bank Details :</strong><br>
+        UJJIVAN SMALL FINANCE BANK<br>
+        Branch: Sanganer, Tonk Road, Jaipur<br>
+        A/C No.: 2338120020000208<br>
+        IFSC: UJVN0002338
+      </div>
+      <div class="decl">Declaration: We declare that this invoice shows in actual price of the goods described and that all particulars are true and correct. SUBJECT TO JAIPUR JURISDICTION</div>
+    </footer>
   </div>
+
 <script src="script.js"></script>
 </body>
 </html>

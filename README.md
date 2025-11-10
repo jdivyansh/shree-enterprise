@@ -1,6 +1,6 @@
-Shri Enterprises - Invoice App (GitHub Pages ready)
+Shri Enterprise - Invoice Generator (Final Look)
 
-Files:
+Files included:
 - index.html
 - style.css
 - script.js
@@ -8,7 +8,7 @@ Files:
 - README.md
 - .nojekyll
 
-Usage:
-- Upload to GitHub repository named jdivyansh.github.io to host, or open index.html locally.
-- Click 'Preview Invoice' to render final bill. 'Download PDF' saves invoice.pdf (A4) matching print layout.
-- Item taxes: CGST and SGST at 9% each (total 18%) calculated on taxable value.
+Instructions:
+1. Upload all files to a repository named jdivyansh.github.io or open index.html locally.
+2. Fill buyer and item details, click 'Preview Invoice' to render the final bill, then 'Download PDF' to save invoice.pdf (A4).
+3. Taxes: CGST 9% and SGST 9% (total 18%) auto-calculated from taxable values.
